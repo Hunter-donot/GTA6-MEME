@@ -1,50 +1,47 @@
-// Entry for the make.fun bounty "Post a GTA 6 meme on X" (gta6-meme-x-01).
-//
-// The meme itself is posted on X; this program's only job is to hand the
-// grader the post's address. It copies POST.json from the repository root
-// into the output directory, byte for byte, and nothing else.
+// GTA 6 meme v4 entrypoint (Node 22, stdlib only).
+// Reads POST.json from the repo root, validates it names a real X post,
+// and copies it to /output/POST.json for the bounty harness.
 import { copyFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const botDir = process.env.MAKEFUN_BOT_DIR ?? "/bot";
+const here = dirname(fileURLToPath(import.meta.url));
+const src = join(here, "POST.json");
 const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
-const src = join(botDir, "POST.json");
-const dst = join(outDir, "POST.json");
-
-if (!existsSync(src)) {
-  console.error(`POST.json not found at ${src}`);
-  process.exit(1);
-}
-
 mkdirSync(outDir, { recursive: true });
 
-try {
-  copyFileSync(src, dst);
-} catch (err) {
-  console.error(`failed to copy POST.json to ${dst}: ${err}`);
+if (!existsSync(src)) {
+  console.error("POST.json not found at repo root");
   process.exit(1);
 }
 
-// The copy is byte for byte; now sanity-check the copied file so a broken
-// POST.json is caught here instead of silently reaching the grader.
-let parsed;
+const raw = readFileSync(src, "utf8");
+let post: unknown;
 try {
-  parsed = JSON.parse(readFileSync(dst, "utf8"));
-} catch (err) {
-  console.error(`copied POST.json at ${dst} is not valid JSON: ${err}`);
+  post = JSON.parse(raw);
+} catch {
+  console.error("POST.json is not valid JSON");
   process.exit(1);
 }
+
+const rawUrl = (post as { url?: unknown }).url;
 if (
-  typeof parsed !== "object" ||
-  parsed === null ||
-  typeof parsed.url !== "string" ||
-  (!parsed.url.startsWith("https://x.com/") &&
-    !parsed.url.startsWith("https://twitter.com/"))
+  typeof rawUrl !== "string" ||
+  !(rawUrl.startsWith("https://x.com/") || rawUrl.startsWith("https://twitter.com/"))
 ) {
-  console.error(
-    `copied POST.json at ${dst} has no valid url: expected a "url" string starting with https://x.com/ or https://twitter.com/`,
-  );
+  console.error("POST.json url must be an https://x.com/ or https://twitter.com/ post link");
   process.exit(1);
 }
 
-console.log(`wrote ${dst}`);
+// Strip any query string or fragment (e.g. tracking params) so the
+// stored URL is the clean post link.
+const url = rawUrl.split("?")[0].split("#")[0];
+
+const statusId = url.split("/status/")[1];
+if (!statusId || !/^\d+$/.test(statusId)) {
+  console.error("POST.json url must name an X post with a numeric status id");
+  process.exit(1);
+}
+
+copyFileSync(src, join(outDir, "POST.json"));
+console.log("copied POST.json to", join(outDir, "POST.json"));
