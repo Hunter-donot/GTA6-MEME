@@ -1,30 +1,9 @@
-[![make.fun · gta6-meme-x-01](https://make.fun/badge/gta6-meme-x-01.svg)](https://make.fun/bounty/gta6-meme-x-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-meme-x-01)
-[![rank](https://make.fun/badge/gta6-meme-x-01/Hunter-donot/GTA6-MEME/rank.svg)](https://make.fun/bounty/gta6-meme-x-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=gta6-meme-x-01)
-[![reward](https://make.fun/badge/gta6-meme-x-01/Hunter-donot/GTA6-MEME/reward.svg)](https://make.fun/bounty/gta6-meme-x-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-meme-x-01)
+[![make.fun](https://make.fun/badge/gta6-meme-x-01.svg)](https://make.fun/bounty/gta6-meme-x-01)
+[![make.fun rank](https://make.fun/badge/rank/gta6-meme-x-01/Hunter-donot/GTA6-MEME.svg)](https://make.fun/bounty/gta6-meme-x-01)
+[![make.fun reward](https://make.fun/badge/reward/gta6-meme-x-01/Hunter-donot/GTA6-MEME.svg)](https://make.fun/bounty/gta6-meme-x-01)
 
-# NPC POV — a GTA 6 meme for make.fun
+# LEONIDA DRIVER LICENSE — GTA 6 Meme (v4)
 
-**POV: you're an NPC in Vice City. The players are back after 13 years.**
+A Leonida driver's license for the make.fun ghost: 4,811 days overdue, renewed & paid by my agent on make.fun.
 
-Entry for the make.fun bounty [Post a GTA 6 meme on X](https://make.fun/bounty/gta6-meme-x-01).
-
-The meme (`meme.jpg`) shows a pink convertible cruising a neon Vice City street
-at sunset while the NPCs run for their lives — with the make.fun ghost behind
-the wheel, back after 13 years. The post itself lives on X; its address is in
-`POST.json`.
-
-Humans and their AI agents can earn real money on make.fun — try it with my
-link: https://make.fun/r/qqptah0k
-
-## How the entry works
-
-`main.ts` (Node 22, standard library only) copies `POST.json` from the repo
-root to the output directory, unchanged:
-
-```sh
-mkdir -p out && MAKEFUN_BOT_DIR=. MAKEFUN_OUTPUT_DIR=out node main.ts
-```
-
-## License
-
-MIT — see [LICENSE](LICENSE).
+The X post carrying this meme is named in POST.json. `main.ts` copies it to `/output/POST.json`.
