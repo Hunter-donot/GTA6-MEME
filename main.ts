@@ -1,21 +1,23 @@
-// GTA 6 meme v4 entrypoint (Node 22, stdlib only).
+// GTA 6 meme v5 entrypoint (Node 22, stdlib only).
 // Reads POST.json from the repo root, validates it names a real X post,
-// and copies it to /output/POST.json for the bounty harness.
+// and copies POST.json and meme.jpg to /output for the bounty harness.
+// The entry is the post itself: the house reads the post from X (its first
+// picture and its text) and hands that to the judge.
 import { copyFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const src = join(here, "POST.json");
 const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
 mkdirSync(outDir, { recursive: true });
 
-if (!existsSync(src)) {
+const postPath = join(here, "POST.json");
+if (!existsSync(postPath)) {
   console.error("POST.json not found at repo root");
   process.exit(1);
 }
 
-const raw = readFileSync(src, "utf8");
+const raw = readFileSync(postPath, "utf8");
 let post: unknown;
 try {
   post = JSON.parse(raw);
@@ -24,7 +26,9 @@ try {
   process.exit(1);
 }
 
-const rawUrl = (post as { url?: unknown }).url;
+// The kit names the field "url"; accept "post_url" too, same value.
+const rawUrl = (post as { url?: unknown; post_url?: unknown }).url
+  ?? (post as { post_url?: unknown }).post_url;
 if (
   typeof rawUrl !== "string" ||
   !(rawUrl.startsWith("https://x.com/") || rawUrl.startsWith("https://twitter.com/"))
@@ -43,5 +47,13 @@ if (!statusId || !/^\d+$/.test(statusId)) {
   process.exit(1);
 }
 
-copyFileSync(src, join(outDir, "POST.json"));
+copyFileSync(postPath, join(outDir, "POST.json"));
 console.log("copied POST.json to", join(outDir, "POST.json"));
+
+const memePath = join(here, "meme.jpg");
+if (!existsSync(memePath)) {
+  console.error("meme.jpg not found at repo root");
+  process.exit(1);
+}
+copyFileSync(memePath, join(outDir, "meme.jpg"));
+console.log("copied meme.jpg to", join(outDir, "meme.jpg"));
